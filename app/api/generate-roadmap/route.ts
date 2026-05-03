@@ -1,5 +1,5 @@
 import { generateText, Output } from 'ai'
-import { openai } from '@ai-sdk/openai'
+import { groq } from '@ai-sdk/groq'
 import { z } from 'zod'
 
 const roadmapSchema = z.object({
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   const { topic } = await req.json()
 
   const { output } = await generateText({
-    model: openai('gpt-4o-mini'),
+    model: groq('llama-3.3-70b-versatile'),
     output: Output.object({
       schema: roadmapSchema,
     }),
