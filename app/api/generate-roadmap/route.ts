@@ -1,4 +1,5 @@
 import { generateText, Output } from 'ai'
+import { openai } from '@ai-sdk/openai'
 import { z } from 'zod'
 
 const roadmapSchema = z.object({
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
   const { topic } = await req.json()
 
   const { output } = await generateText({
-    model: 'openai/gpt-4o-mini',
+    model: openai('gpt-4o-mini'),
     output: Output.object({
       schema: roadmapSchema,
     }),

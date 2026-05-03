@@ -1,4 +1,5 @@
 import { generateText, Output } from 'ai'
+import { openai } from '@ai-sdk/openai'
 import { z } from 'zod'
 
 const classificationSchema = z.object({
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
     .join('\n\n')
 
   const { output } = await generateText({
-    model: 'openai/gpt-4o-mini',
+    model: openai('gpt-4o-mini'),
     output: Output.object({
       schema: classificationSchema,
     }),
