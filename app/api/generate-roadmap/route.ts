@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   const { topic } = await req.json()
 
   const { output } = await generateText({
-    model: groq('llama-3.3-70b-versatile'),
+    model: groq('llama-3.3-70b-specdec'),
     output: Output.object({
       schema: roadmapSchema,
     }),
