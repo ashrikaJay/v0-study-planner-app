@@ -17,15 +17,12 @@ interface RoadmapsListProps {
 }
 
 export function RoadmapsList({ roadmaps, resources, onCreateNew }: RoadmapsListProps) {
-  const getProgress = (roadmapId: string) => {
+  const getResourceStats = (roadmapId: string) => {
     const roadmapResources = resources.filter(r => r.roadmap_id === roadmapId)
-    if (roadmapResources.length === 0) return 0
+    const total = roadmapResources.length
     const completed = roadmapResources.filter(r => r.is_completed).length
-    return Math.round((completed / roadmapResources.length) * 100)
-  }
-
-  const getResourceCount = (roadmapId: string) => {
-    return resources.filter(r => r.roadmap_id === roadmapId).length
+    const percentage = total === 0 ? 0 : Math.round((completed / total) * 100)
+    return { total, completed, percentage }
   }
 
   return (
@@ -57,8 +54,7 @@ export function RoadmapsList({ roadmaps, resources, onCreateNew }: RoadmapsListP
         ) : (
           <div className="flex flex-col gap-2 sm:gap-3">
             {roadmaps.map((roadmap) => {
-              const progress = getProgress(roadmap.id)
-              const resourceCount = getResourceCount(roadmap.id)
+              const { total, completed, percentage } = getResourceStats(roadmap.id)
               
               return (
                 <Link
@@ -85,14 +81,23 @@ export function RoadmapsList({ roadmaps, resources, onCreateNew }: RoadmapsListP
                           )}
                         </div>
                         <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">
-                          {roadmap.stages.length} stages · {resourceCount} resources
+                          {roadmap.stages.length} stages
                         </p>
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <Progress value={progress} className="flex-1 h-1.5 sm:h-2" />
-                          <span className="text-[10px] sm:text-xs text-muted-foreground w-8 sm:w-10 text-right">
-                            {progress}%
-                          </span>
-                        </div>
+                        {total > 0 ? (
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <Progress value={percentage} className="flex-1 h-1.5 sm:h-2" />
+                              <span className="text-[10px] sm:text-xs text-muted-foreground w-8 sm:w-10 text-right">
+                                {percentage}%
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              {completed} of {total} resources completed
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">No resources yet</p>
+                        )}
                       </div>
                       <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0 mt-1" />
                     </div>

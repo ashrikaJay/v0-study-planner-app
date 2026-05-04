@@ -41,6 +41,19 @@ export default async function SharedRoadmapPage({ params }: SharedRoadmapPagePro
 
   return (
     <div className="min-h-screen bg-background">
+      <div className="sticky top-0 z-50 bg-primary text-primary-foreground py-2 px-4">
+        <div className="flex items-center justify-center gap-3 text-sm">
+          <span>You&apos;re viewing a StudyPath roadmap — create your own free learning path</span>
+          <Button 
+            asChild 
+            size="sm" 
+            variant="outline" 
+            className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white h-7 text-xs"
+          >
+            <Link href="/auth/sign-up">Get Started Free</Link>
+          </Button>
+        </div>
+      </div>
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 max-w-4xl">
           <div className="flex items-center justify-between">
