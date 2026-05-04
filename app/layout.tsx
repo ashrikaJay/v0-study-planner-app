@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   title: 'StudyPath - AI-Powered Learning Roadmaps',
   description: 'Generate personalized learning roadmaps and organize resources with AI',
   generator: 'v0.app',
+  openGraph: {
+    title: 'StudyPath - AI-Powered Learning Roadmaps',
+    description: 'Generate personalized learning roadmaps and organize resources with AI',
+    images: ['/apple-icon.png'],
+  },
   icons: {
     icon: [
       {
