@@ -7,6 +7,15 @@ import { RoadmapsList } from '@/components/dashboard/roadmaps-list'
 import { StatsOverview } from '@/components/dashboard/stats-overview'
 import { RecentActivity } from '@/components/dashboard/recent-activity'
 import { CreateRoadmapDialog } from '@/components/dashboard/create-roadmap-dialog'
+import { DailyGoal } from '@/components/daily-goal'
+import { StudyTimer } from '@/components/study-timer'
+import { QuickActions } from '@/components/quick-actions'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import type { Roadmap, Resource, Profile, Streak, StudySession } from '@/lib/types'
 
 export default function DashboardPage() {
@@ -17,6 +26,7 @@ export default function DashboardPage() {
   const [sessions, setSessions] = useState<StudySession[]>([])
   const [loading, setLoading] = useState(true)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [timerOpen, setTimerOpen] = useState(false)
 
   const supabase = createClient()
 
@@ -58,11 +68,16 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 sm:pb-0">
       <DashboardHeader profile={profile} />
       
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="flex flex-col gap-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
+        <div className="flex flex-col gap-4 sm:gap-8">
+          {/* Mobile daily goal */}
+          <div className="sm:hidden">
+            <DailyGoal />
+          </div>
+
           <StatsOverview 
             roadmaps={roadmaps} 
             resources={resources} 
@@ -70,8 +85,8 @@ export default function DashboardPage() {
             sessions={sessions}
           />
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-8">
               <RoadmapsList 
                 roadmaps={roadmaps} 
                 resources={resources}
@@ -79,7 +94,12 @@ export default function DashboardPage() {
                 onRefresh={fetchData}
               />
             </div>
-            <div>
+            <div className="space-y-4 sm:space-y-6">
+              {/* Desktop daily goal & timer */}
+              <div className="hidden sm:block space-y-4">
+                <DailyGoal />
+                <StudyTimer onSessionComplete={fetchData} />
+              </div>
               <RecentActivity 
                 sessions={sessions} 
                 resources={resources}
@@ -89,6 +109,23 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      {/* Mobile Quick Actions */}
+      <QuickActions
+        onOpenTimer={() => setTimerOpen(true)}
+        onAddResource={() => {}}
+        onCreateRoadmap={() => setCreateDialogOpen(true)}
+      />
+
+      {/* Mobile Timer Dialog */}
+      <Dialog open={timerOpen} onOpenChange={setTimerOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Study Timer</DialogTitle>
+          </DialogHeader>
+          <StudyTimer onSessionComplete={() => { fetchData(); setTimerOpen(false); }} />
+        </DialogContent>
+      </Dialog>
 
       <CreateRoadmapDialog
         open={createDialogOpen}
