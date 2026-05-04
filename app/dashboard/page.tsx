@@ -56,10 +56,18 @@ export default function DashboardPage() {
     fetchData()
   }, [])
 
+  // useEffect(() => {
+  // const handleFocus = () => fetchData()
+  // window.addEventListener('focus', handleFocus)
+  // return () => window.removeEventListener('focus', handleFocus)
+  // }, [])
+  
   useEffect(() => {
-  const handleFocus = () => fetchData()
-  window.addEventListener('focus', handleFocus)
-  return () => window.removeEventListener('focus', handleFocus)
+  const handleVisibility = () => {
+    if (document.visibilityState === 'visible') fetchData()
+  }
+  document.addEventListener('visibilitychange', handleVisibility)
+  return () => document.removeEventListener('visibilitychange', handleVisibility)
   }, [])
 
   const handleRoadmapCreated = (newRoadmap: Roadmap) => {
