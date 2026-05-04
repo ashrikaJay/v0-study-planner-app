@@ -107,7 +107,7 @@ export function SuggestResourcesDialog({
             user_id: user.id,
             roadmap_id: roadmap.id,
             title: suggestion.title,
-            url: suggestion.url,
+            url: suggestion.searchUrl ?? suggestion.url,
             stage: suggestion.stage,
             priority: 'Read Later',
             reasoning: suggestion.description,
@@ -202,14 +202,14 @@ export function SuggestResourcesDialog({
                           {suggestion.description}
                         </p>
                         <a
-                          href={suggestion.url}
+                          href={suggestion.searchUrl ?? suggestion.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <ExternalLink className="h-3 w-3" />
-                          {new URL(suggestion.url).hostname}
+                          Search for this resource
                         </a>
                       </div>
                     </div>

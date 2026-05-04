@@ -73,7 +73,9 @@ export interface Streak {
 
 export interface SuggestedResource {
   title: string
-  url: string
+  searchQuery: string
+  searchUrl: string
+  url?: string // deprecated, kept for backward compatibility
   type: 'article' | 'video' | 'course' | 'book' | 'tutorial'
   stage: Stage
   description: string

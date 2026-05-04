@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
-import { Plus, Route, ChevronRight, Globe, Lock } from 'lucide-react'
+
+import { Plus, Sparkles, ChevronRight, Globe, Lock } from 'lucide-react'
 import type { Roadmap, Resource } from '@/lib/types'
 
 interface RoadmapsListProps {
@@ -39,21 +39,21 @@ export function RoadmapsList({ roadmaps, resources, onCreateNew }: RoadmapsListP
       </CardHeader>
       <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
         {roadmaps.length === 0 ? (
-          <Empty className="py-6 sm:py-8">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Route className="h-5 w-5 sm:h-6 sm:w-6" />
-              </EmptyMedia>
-              <EmptyTitle className="text-sm sm:text-base">No roadmaps yet</EmptyTitle>
-              <EmptyDescription className="text-xs sm:text-sm">
-                Create your first learning roadmap to get started
-              </EmptyDescription>
-            </EmptyHeader>
-            <Button onClick={onCreateNew} className="mt-4" size="sm">
-              <Plus className="h-4 w-4 mr-1" />
+          <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4">
+            <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 mb-4 sm:mb-6">
+              <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
+            </div>
+            <h3 className="text-lg sm:text-xl font-semibold text-foreground text-center mb-2">
+              Start your first learning journey
+            </h3>
+            <p className="text-sm sm:text-base text-muted-foreground text-center max-w-sm mb-6">
+              Generate an AI-powered roadmap for any topic — from code to cooking.
+            </p>
+            <Button onClick={onCreateNew} size="default">
+              <Plus className="h-4 w-4 mr-2" />
               Create Roadmap
             </Button>
-          </Empty>
+          </div>
         ) : (
           <div className="flex flex-col gap-2 sm:gap-3">
             {roadmaps.map((roadmap) => {
