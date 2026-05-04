@@ -56,6 +56,12 @@ export default function DashboardPage() {
     fetchData()
   }, [])
 
+  useEffect(() => {
+  const handleFocus = () => fetchData()
+  window.addEventListener('focus', handleFocus)
+  return () => window.removeEventListener('focus', handleFocus)
+  }, [])
+
   const handleRoadmapCreated = (newRoadmap: Roadmap) => {
     setRoadmaps([newRoadmap, ...roadmaps])
     setCreateDialogOpen(false)
