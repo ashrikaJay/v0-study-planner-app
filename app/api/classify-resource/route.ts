@@ -5,7 +5,9 @@ export async function POST(req: Request) {
   try {
     const { content, roadmap, preferredStage } = await req.json()
 
-    const stagesContext = roadmap.stages.join(', ')
+    const stagesContext = roadmap.stages.map((s: { name: string; concepts: { name: string }[] }) => 
+  `${s.name}: ${s.concepts.map(c => c.name).join(', ')}`
+).join(' | ')
 
     const { text } = await generateText({
       model: groq('llama-3.3-70b-versatile'),
