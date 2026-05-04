@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   Dialog,
@@ -25,7 +25,29 @@ interface CreateRoadmapDialogProps {
 export function CreateRoadmapDialog({ open, onOpenChange, onCreated }: CreateRoadmapDialogProps) {
   const [topic, setTopic] = useState('')
   const [loading, setLoading] = useState(false)
+  const [messageIndex, setMessageIndex] = useState(0)
   const supabase = createClient()
+
+  const loadingMessages = [
+    'Mapping your learning journey...',
+    'Identifying key concepts...',
+    'Structuring Beginner to Expert stages...',
+    'Estimating learning times...',
+    'Finalising your roadmap...',
+  ]
+
+  useEffect(() => {
+    if (!loading) {
+      setMessageIndex(0)
+      return
+    }
+
+    const interval = setInterval(() => {
+      setMessageIndex((prev) => (prev + 1) % loadingMessages.length)
+    }, 2000)
+
+    return () => clearInterval(interval)
+  }, [loading, loadingMessages.length])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -97,6 +119,7 @@ export function CreateRoadmapDialog({ open, onOpenChange, onCreated }: CreateRoa
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleCreate}>
+          <div className={loading ? 'opacity-60 transition-opacity' : ''}>
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="topic">What do you want to learn?</FieldLabel>
@@ -110,6 +133,7 @@ export function CreateRoadmapDialog({ open, onOpenChange, onCreated }: CreateRoa
               />
             </Field>
           </FieldGroup>
+          </div>
           <div className="flex justify-end gap-2 mt-6">
             <Button
               type="button"
@@ -119,12 +143,12 @@ export function CreateRoadmapDialog({ open, onOpenChange, onCreated }: CreateRoa
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !topic.trim()}>
+            <Button type="submit" disabled={loading || !topic.trim()} className={loading ? 'min-w-[260px]' : ''}>
               {loading ? (
-                <>
-                  <Spinner className="mr-2" />
-                  Generating...
-                </>
+                <span className="flex items-center gap-2">
+                  <Spinner />
+                  <span className="text-sm">{loadingMessages[messageIndex]}</span>
+                </span>
               ) : (
                 'Create Roadmap'
               )}
