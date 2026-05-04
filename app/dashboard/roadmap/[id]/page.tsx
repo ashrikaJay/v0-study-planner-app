@@ -79,16 +79,16 @@ export default function RoadmapPage({ params }: RoadmapPageProps) {
   }, [id])
 
   const handleResourceAdded = (resource: Resource) => {
-    setResources([resource, ...resources])
+    setResources(prev => [resource, ...prev])
     setAddResourceOpen(false)
   }
 
   const handleResourceUpdated = (updatedResource: Resource) => {
-    setResources(resources.map(r => r.id === updatedResource.id ? updatedResource : r))
+    setResources(prev => prev.map(r => r.id === updatedResource.id ? updatedResource : r))
   }
 
   const handleResourceDeleted = (resourceId: string) => {
-    setResources(resources.filter(r => r.id !== resourceId))
+    setResources(prev => prev.filter(r => r.id !== resourceId))
   }
 
   const handleProgressUpdate = async () => {
