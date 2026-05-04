@@ -22,7 +22,7 @@ export function StatsOverview({ roadmaps, resources, streak, sessions }: StatsOv
 
   const stats = [
     {
-      label: 'Active Roadmaps',
+      label: 'Roadmaps',
       value: roadmaps.length,
       icon: Route,
       color: 'text-primary',
@@ -37,39 +37,47 @@ export function StatsOverview({ roadmaps, resources, streak, sessions }: StatsOv
     },
     {
       label: 'Completed',
-      value: `${completedResources} (${completionRate}%)`,
+      value: `${completedResources}`,
+      subValue: `${completionRate}%`,
       icon: CheckCircle,
       color: 'text-green-400',
       bgColor: 'bg-green-400/10',
     },
     {
-      label: 'Current Streak',
-      value: `${streak?.current_streak || 0} days`,
+      label: 'Streak',
+      value: streak?.current_streak || 0,
+      subValue: 'days',
       icon: Flame,
       color: 'text-orange-400',
       bgColor: 'bg-orange-400/10',
     },
     {
       label: 'Study Time',
-      value: hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`,
+      value: hours > 0 ? `${hours}h` : `${minutes}m`,
+      subValue: hours > 0 ? `${minutes}m` : undefined,
       icon: Clock,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-400/10',
+      color: 'text-violet-400',
+      bgColor: 'bg-violet-400/10',
     },
   ]
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
       {stats.map((stat) => (
         <Card key={stat.label} className="bg-card border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                <stat.icon className={`h-5 w-5 ${stat.color}`} />
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={`p-1.5 sm:p-2 rounded-lg ${stat.bgColor} shrink-0`}>
+                <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${stat.color}`} />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
+              <div className="min-w-0">
+                <div className="flex items-baseline gap-1">
+                  <p className="text-lg sm:text-2xl font-bold text-foreground truncate">{stat.value}</p>
+                  {stat.subValue && (
+                    <span className="text-xs sm:text-sm text-muted-foreground">{stat.subValue}</span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground truncate">{stat.label}</p>
               </div>
             </div>
           </CardContent>

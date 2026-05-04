@@ -9,10 +9,14 @@ import { ResourcesPanel } from '@/components/roadmap/resources-panel'
 import { AddResourceDialog } from '@/components/roadmap/add-resource-dialog'
 import { SuggestResourcesDialog } from '@/components/roadmap/suggest-resources-dialog'
 import { ShareDialog } from '@/components/roadmap/share-dialog'
+import { StudyTimer } from '@/components/study-timer'
+import { DailyGoal } from '@/components/daily-goal'
+import { QuickActions } from '@/components/quick-actions'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Plus, Sparkles, Share2, Trash2 } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ArrowLeft, Plus, Sparkles, Share2, Trash2, BookOpen, Link, Timer } from 'lucide-react'
 import { toast } from 'sonner'
-import type { Roadmap, Resource, Profile, Stage } from '@/lib/types'
+import type { Roadmap, Resource, Profile, Stage, ConceptProgress } from '@/lib/types'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +27,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 interface RoadmapPageProps {
   params: Promise<{ id: string }>
@@ -34,12 +44,15 @@ export default function RoadmapPage({ params }: RoadmapPageProps) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null)
   const [resources, setResources] = useState<Resource[]>([])
+  const [conceptProgress, setConceptProgress] = useState<ConceptProgress[]>([])
   const [loading, setLoading] = useState(true)
   const [addResourceOpen, setAddResourceOpen] = useState(false)
   const [suggestOpen, setSuggestOpen] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [timerOpen, setTimerOpen] = useState(false)
   const [selectedStage, setSelectedStage] = useState<Stage | null>(null)
+  const [activeTab, setActiveTab] = useState<'roadmap' | 'resources'>('roadmap')
 
   const supabase = createClient()
 
@@ -47,15 +60,17 @@ export default function RoadmapPage({ params }: RoadmapPageProps) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    const [profileRes, roadmapRes, resourcesRes] = await Promise.all([
+    const [profileRes, roadmapRes, resourcesRes, progressRes] = await Promise.all([
       supabase.from('profiles').select('*').eq('id', user.id).single(),
       supabase.from('roadmaps').select('*').eq('id', id).single(),
       supabase.from('resources').select('*').eq('roadmap_id', id).order('created_at', { ascending: false }),
+      supabase.from('concept_progress').select('*').eq('roadmap_id', id),
     ])
 
     if (profileRes.data) setProfile(profileRes.data)
     if (roadmapRes.data) setRoadmap(roadmapRes.data)
     if (resourcesRes.data) setResources(resourcesRes.data)
+    if (progressRes.data) setConceptProgress(progressRes.data)
     setLoading(false)
   }
 
@@ -74,6 +89,14 @@ export default function RoadmapPage({ params }: RoadmapPageProps) {
 
   const handleResourceDeleted = (resourceId: string) => {
     setResources(resources.filter(r => r.id !== resourceId))
+  }
+
+  const handleProgressUpdate = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    
+    const { data } = await supabase.from('concept_progress').select('*').eq('roadmap_id', id)
+    if (data) setConceptProgress(data)
   }
 
   const handleDelete = async () => {
@@ -109,23 +132,27 @@ export default function RoadmapPage({ params }: RoadmapPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 sm:pb-0">
       <DashboardHeader profile={profile} />
 
-      <main className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard')}>
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-7xl">
+        {/* Header - mobile responsive */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard')} className="shrink-0">
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">{roadmap.topic}</h1>
-              <p className="text-sm text-muted-foreground">
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-bold text-foreground truncate">{roadmap.topic}</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {roadmap.stages.length} stages · {resources.length} resources
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          
+          {/* Desktop actions */}
+          <div className="hidden sm:flex items-center gap-2">
+            <StudyTimer roadmapId={id} compact onSessionComplete={fetchData} />
             <Button variant="outline" size="sm" onClick={() => setSuggestOpen(true)}>
               <Sparkles className="h-4 w-4 mr-1" />
               AI Suggest
@@ -142,17 +169,77 @@ export default function RoadmapPage({ params }: RoadmapPageProps) {
               <Trash2 className="h-4 w-4 text-destructive" />
             </Button>
           </div>
+
+          {/* Mobile actions row */}
+          <div className="flex sm:hidden items-center gap-2 overflow-x-auto pb-1">
+            <Button variant="outline" size="sm" onClick={() => setTimerOpen(true)} className="shrink-0">
+              <Timer className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setSuggestOpen(true)} className="shrink-0">
+              <Sparkles className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setAddResourceOpen(true)} className="shrink-0">
+              <Plus className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShareOpen(true)} className="shrink-0">
+              <Share2 className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setDeleteOpen(true)} className="shrink-0">
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+        {/* Mobile tabs */}
+        <div className="lg:hidden mb-4">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'roadmap' | 'resources')}>
+            <TabsList className="w-full">
+              <TabsTrigger value="roadmap" className="flex-1 gap-1">
+                <BookOpen className="h-4 w-4" />
+                Roadmap
+              </TabsTrigger>
+              <TabsTrigger value="resources" className="flex-1 gap-1">
+                <Link className="h-4 w-4" />
+                Resources
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="roadmap" className="mt-4">
+              <div className="space-y-4">
+                <DailyGoal compact />
+                <RoadmapView 
+                  roadmap={roadmap} 
+                  resources={resources}
+                  conceptProgress={conceptProgress}
+                  onAddToStage={handleAddToStage}
+                  onProgressUpdate={handleProgressUpdate}
+                />
+              </div>
+            </TabsContent>
+            <TabsContent value="resources" className="mt-4">
+              <ResourcesPanel
+                resources={resources}
+                roadmap={roadmap}
+                onResourceUpdated={handleResourceUpdated}
+                onResourceDeleted={handleResourceDeleted}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Desktop layout */}
+        <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
             <RoadmapView 
               roadmap={roadmap} 
               resources={resources}
+              conceptProgress={conceptProgress}
               onAddToStage={handleAddToStage}
+              onProgressUpdate={handleProgressUpdate}
             />
           </div>
-          <div>
+          <div className="space-y-4">
+            <DailyGoal />
+            <StudyTimer roadmapId={id} onSessionComplete={fetchData} />
             <ResourcesPanel
               resources={resources}
               roadmap={roadmap}
@@ -162,6 +249,23 @@ export default function RoadmapPage({ params }: RoadmapPageProps) {
           </div>
         </div>
       </main>
+
+      {/* Mobile Quick Actions */}
+      <QuickActions
+        onOpenTimer={() => setTimerOpen(true)}
+        onAddResource={() => setAddResourceOpen(true)}
+        onCreateRoadmap={() => router.push('/dashboard')}
+      />
+
+      {/* Mobile Timer Dialog */}
+      <Dialog open={timerOpen} onOpenChange={setTimerOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Study Timer</DialogTitle>
+          </DialogHeader>
+          <StudyTimer roadmapId={id} onSessionComplete={() => { fetchData(); setTimerOpen(false); }} />
+        </DialogContent>
+      </Dialog>
 
       <AddResourceDialog
         open={addResourceOpen}

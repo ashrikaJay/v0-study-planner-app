@@ -114,24 +114,24 @@ export function ResourcesPanel({
 
   return (
     <Card className="bg-card border-border">
-      <CardHeader>
-        <CardTitle className="text-foreground">Resources</CardTitle>
+      <CardHeader className="pb-2 sm:pb-4">
+        <CardTitle className="text-foreground text-base sm:text-lg">Resources</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
         {!hasResources ? (
-          <Empty className="py-6">
+          <Empty className="py-4 sm:py-6">
             <EmptyHeader>
               <EmptyMedia variant="icon">
-                <BookOpen className="h-5 w-5" />
+                <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
               </EmptyMedia>
-              <EmptyTitle className="text-sm">No resources yet</EmptyTitle>
-              <EmptyDescription className="text-xs">
+              <EmptyTitle className="text-xs sm:text-sm">No resources yet</EmptyTitle>
+              <EmptyDescription className="text-[10px] sm:text-xs">
                 Add resources or let AI suggest some
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 sm:gap-4">
             {stages.map(stage => {
               const stageResources = groupedResources[stage]
               if (stageResources.length === 0) return null
@@ -140,14 +140,14 @@ export function ResourcesPanel({
                 <Collapsible key={stage} defaultOpen>
                   <CollapsibleTrigger asChild>
                     <button className="flex items-center justify-between w-full p-2 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors">
-                      <span className="text-sm font-medium text-foreground">
+                      <span className="text-xs sm:text-sm font-medium text-foreground">
                         {stage}
                       </span>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className="text-xs">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <Badge variant="secondary" className="text-[10px] sm:text-xs h-5 px-1.5">
                           {stageResources.length}
                         </Badge>
-                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                       </div>
                     </button>
                   </CollapsibleTrigger>
@@ -157,48 +157,49 @@ export function ResourcesPanel({
                         <div
                           key={resource.id}
                           className={cn(
-                            'p-3 rounded-lg border border-border bg-secondary/20',
+                            'p-2 sm:p-3 rounded-lg border border-border bg-secondary/20',
                             resource.is_completed && 'opacity-60'
                           )}
                         >
-                          <div className="flex items-start gap-3">
+                          <div className="flex items-start gap-2 sm:gap-3">
                             <Checkbox
                               checked={resource.is_completed}
                               onCheckedChange={() => toggleComplete(resource)}
-                              className="mt-0.5"
+                              className="mt-0.5 shrink-0"
                             />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-2">
                                 <h4 className={cn(
-                                  'text-sm font-medium text-foreground',
+                                  'text-xs sm:text-sm font-medium text-foreground break-words',
                                   resource.is_completed && 'line-through'
                                 )}>
                                   {resource.title}
                                 </h4>
                                 <Badge 
                                   variant="outline" 
-                                  className={cn('text-xs shrink-0', priorityColors[resource.priority])}
+                                  className={cn('text-[10px] sm:text-xs shrink-0 px-1.5 h-5', priorityColors[resource.priority])}
                                 >
-                                  {resource.priority}
+                                  <span className="hidden sm:inline">{resource.priority}</span>
+                                  <span className="sm:hidden">{resource.priority.split(' ')[0]}</span>
                                 </Badge>
                               </div>
                               
                               {resource.reasoning && (
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 line-clamp-2">
                                   {resource.reasoning}
                                 </p>
                               )}
 
-                              <div className="flex items-center gap-2 mt-2">
+                              <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-2">
                                 {resource.url && (
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-7 px-2 text-xs"
+                                    className="h-6 sm:h-7 px-1.5 sm:px-2 text-[10px] sm:text-xs"
                                     asChild
                                   >
                                     <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                                      <ExternalLink className="h-3 w-3 mr-1" />
+                                      <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
                                       Open
                                     </a>
                                   </Button>
@@ -206,7 +207,7 @@ export function ResourcesPanel({
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-7 px-2 text-xs"
+                                  className="h-6 sm:h-7 px-1.5 sm:px-2 text-[10px] sm:text-xs"
                                   onClick={() => {
                                     if (expandedNotes === resource.id) {
                                       setExpandedNotes(null)
@@ -216,39 +217,40 @@ export function ResourcesPanel({
                                     }
                                   }}
                                 >
-                                  <StickyNote className="h-3 w-3 mr-1" />
+                                  <StickyNote className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
                                   Notes
                                 </Button>
                                 {resource.time_spent > 0 && (
-                                  <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
+                                  <span className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-0.5">
+                                    <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                     {resource.time_spent}m
                                   </span>
                                 )}
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-7 px-2 text-xs text-destructive hover:text-destructive ml-auto"
+                                  className="h-6 sm:h-7 px-1.5 sm:px-2 text-[10px] sm:text-xs text-destructive hover:text-destructive ml-auto"
                                   onClick={() => handleDelete(resource.id)}
                                 >
-                                  <Trash2 className="h-3 w-3" />
+                                  <Trash2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                 </Button>
                               </div>
 
                               {expandedNotes === resource.id && (
-                                <div className="mt-3">
+                                <div className="mt-2 sm:mt-3">
                                   {editingNote === resource.id ? (
                                     <div className="flex flex-col gap-2">
                                       <Textarea
                                         value={noteContent}
                                         onChange={(e) => setNoteContent(e.target.value)}
                                         placeholder="Add your notes..."
-                                        className="text-sm bg-background"
-                                        rows={3}
+                                        className="text-xs sm:text-sm bg-background min-h-[60px]"
+                                        rows={2}
                                       />
                                       <div className="flex gap-2">
                                         <Button
                                           size="sm"
+                                          className="h-7 text-xs"
                                           onClick={() => saveNote(resource)}
                                         >
                                           Save
@@ -256,6 +258,7 @@ export function ResourcesPanel({
                                         <Button
                                           size="sm"
                                           variant="ghost"
+                                          className="h-7 text-xs"
                                           onClick={() => {
                                             setEditingNote(null)
                                             setExpandedNotes(null)
@@ -267,7 +270,7 @@ export function ResourcesPanel({
                                     </div>
                                   ) : (
                                     <div
-                                      className="p-2 rounded bg-background text-sm text-muted-foreground cursor-pointer"
+                                      className="p-2 rounded bg-background text-xs sm:text-sm text-muted-foreground cursor-pointer"
                                       onClick={() => startEditingNote(resource)}
                                     >
                                       {resource.notes || 'Click to add notes...'}
