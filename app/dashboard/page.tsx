@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { Roadmap, Resource, Profile, Streak, StudySession } from '@/lib/types'
 
 export default function DashboardPage() {
@@ -61,8 +62,34 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      <div className="min-h-screen bg-background">
+        <div className="h-16 border-b border-border bg-card">
+          <div className="container mx-auto px-4 h-full flex items-center justify-between">
+            <Skeleton className="h-8 w-32" />
+            <Skeleton className="h-9 w-9 rounded-full" />
+          </div>
+        </div>
+        <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
+          <div className="flex flex-col gap-4 sm:gap-8">
+            {/* Stats row - 5 cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-24 sm:h-28 rounded-lg" />
+              ))}
+            </div>
+            
+            {/* 2/3 + 1/3 grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+              <div className="lg:col-span-2">
+                <Skeleton className="h-80 sm:h-96 rounded-lg" />
+              </div>
+              <div className="space-y-4 sm:space-y-6">
+                <Skeleton className="h-40 rounded-lg" />
+                <Skeleton className="h-48 rounded-lg" />
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     )
   }
