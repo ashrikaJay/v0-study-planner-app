@@ -6,6 +6,7 @@ import { DashboardHeader } from '@/components/dashboard/dashboard-header'
 import { RoadmapsList } from '@/components/dashboard/roadmaps-list'
 import { StatsOverview } from '@/components/dashboard/stats-overview'
 import { RecentActivity } from '@/components/dashboard/recent-activity'
+import { TodaysFocus } from '@/components/dashboard/todays-focus'
 import { CreateRoadmapDialog } from '@/components/dashboard/create-roadmap-dialog'
 import { DailyGoal } from '@/components/daily-goal'
 import { StudyTimer } from '@/components/study-timer'
@@ -127,6 +128,11 @@ export default function DashboardPage() {
                 <DailyGoal />
                 <StudyTimer onSessionComplete={fetchData} />
               </div>
+              <TodaysFocus
+                roadmaps={roadmaps}
+                resources={resources}
+                onStartTimer={() => setTimerOpen(true)}
+              />
               <RecentActivity 
                 sessions={sessions} 
                 resources={resources}
