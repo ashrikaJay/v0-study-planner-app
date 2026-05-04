@@ -55,12 +55,6 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchData()
   }, [])
-
-  // useEffect(() => {
-  // const handleFocus = () => fetchData()
-  // window.addEventListener('focus', handleFocus)
-  // return () => window.removeEventListener('focus', handleFocus)
-  // }, [])
   
   useEffect(() => {
   const handleVisibility = () => {
