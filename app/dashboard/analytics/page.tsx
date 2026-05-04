@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, TrendingUp, Clock, CheckCircle, Flame, BookOpen, Target, Calendar, Trophy } from 'lucide-react'
+import { ArrowLeft, TrendingUp, Clock, CheckCircle, Flame, BookOpen, Target, Calendar, Trophy, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 import type { Profile, Roadmap, Resource, Streak, StudySession, Stage, ConceptProgress } from '@/lib/types'
 import { 
@@ -73,6 +73,31 @@ export default function AnalyticsPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    )
+  }
+
+  // Check for empty data state
+  const hasNoData = sessions.length === 0 && roadmaps.length === 0 && resources.length === 0
+
+  if (hasNoData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <DashboardHeader profile={profile} />
+        <main className="container mx-auto px-4 py-8 max-w-7xl">
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
+              <BarChart3 className="h-10 w-10 text-primary" />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground mb-2">No data yet</h2>
+            <p className="text-muted-foreground text-center max-w-sm mb-6">
+              Complete study sessions and resources to see your analytics here
+            </p>
+            <Button asChild>
+              <Link href="/dashboard">Go to Dashboard</Link>
+            </Button>
+          </div>
+        </main>
       </div>
     )
   }
