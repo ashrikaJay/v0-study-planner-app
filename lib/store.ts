@@ -51,7 +51,7 @@ export const useStudyStore = create<StudyStore>()(
       toggleResourceComplete: (id) => {
         set((state) => ({
           resources: state.resources.map((r) =>
-            r.id === id ? { ...r, completed: !r.completed } : r
+            r.id === id ? { ...r, is_completed: !r.is_completed } : r
           ),
         }))
       },
@@ -59,13 +59,13 @@ export const useStudyStore = create<StudyStore>()(
       getResourcesByStage: (roadmapId, stage) => {
         const state = get()
         return state.resources.filter(
-          (r) => r.roadmapId === roadmapId && r.stage === stage
+          (r) => r.roadmap_id === roadmapId && r.stage === stage
         )
       },
       
       getResourcesByRoadmap: (roadmapId) => {
         const state = get()
-        return state.resources.filter((r) => r.roadmapId === roadmapId)
+        return state.resources.filter((r) => r.roadmap_id === roadmapId)
       },
     }),
     {
