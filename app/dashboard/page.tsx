@@ -1,5 +1,5 @@
 'use client'
-
+import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { DashboardHeader } from '@/components/dashboard/dashboard-header'
@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [timerOpen, setTimerOpen] = useState(false)
+  const pathname = usePathname()
 
   const supabase = createClient()
 
@@ -53,8 +54,8 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    fetchData()
-  }, [])
+  fetchData()
+  }, [pathname])
 
   const handleRoadmapCreated = (newRoadmap: Roadmap) => {
     setRoadmaps([newRoadmap, ...roadmaps])

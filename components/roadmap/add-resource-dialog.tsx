@@ -95,7 +95,7 @@ export function AddResourceDialog({
           content: inputContent,
           roadmap: {
             topic: roadmap.topic,
-            stages: roadmap.stages.map(s => s.name),
+            stages: roadmap.stages,
           },
           preferredStage: defaultStage,
         }),

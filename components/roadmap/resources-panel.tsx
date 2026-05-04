@@ -19,7 +19,8 @@ import {
   ExternalLink, 
   Trash2, 
   StickyNote,
-  Clock
+  Clock,
+  CheckCircle2
 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Resource, Roadmap, Stage } from '@/lib/types'
@@ -229,7 +230,20 @@ export function ResourcesPanel({
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 sm:h-7 px-1.5 sm:px-2 text-[10px] sm:text-xs text-destructive hover:text-destructive ml-auto"
+                                  className={cn(
+                                    "h-6 sm:h-7 px-1.5 sm:px-2 ml-auto",
+                                    resource.is_completed 
+                                      ? "text-primary" 
+                                      : "text-muted-foreground hover:text-primary"
+                                  )}
+                                  onClick={() => toggleComplete(resource)}
+                                >
+                                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 sm:h-7 px-1.5 sm:px-2 text-[10px] sm:text-xs text-destructive hover:text-destructive"
                                   onClick={() => handleDelete(resource.id)}
                                 >
                                   <Trash2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
